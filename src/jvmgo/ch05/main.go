@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"jvmgo/ch02/classpath"
-	"jvmgo/ch03/classfile"
-	"jvmgo/ch04/rtda"
+	"jvmgo/ch05/classfile"
+	"jvmgo/ch05/classpath"
+	"strings"
 )
 
 func main() {
@@ -19,6 +19,7 @@ func main() {
 	}
 }
 
+/*
 func startJVM(cmd *Cmd) {
 	frame := rtda.NewFrame(100, 100)
 	testLocalVars(frame.LocalVars())
@@ -58,8 +59,8 @@ func testOperandStack(ops *rtda.OperandStack) {
 	println(ops.PopInt())
 	println(ops.PopInt())
 }
+*/
 
-/*
 func startJVM(cmd *Cmd) {
 	// 设定jre路径(jre下有启动类路径，扩展类路径)和用户类路径
 	// 类路径可以有多个，用系统路径分隔符隔开
@@ -70,10 +71,24 @@ func startJVM(cmd *Cmd) {
 	// 类全限名转为路径名，无后缀
 	className := strings.Replace(cmd.class, ".", "/", -1)
 	cf := loadClass(className, cp)
-	fmt.Println(cmd.class)
-	printClassInfo(cf)
+	mainMethod := getMainMethod(cf)
+	if mainMethod != nil {
+		interpret(mainMethod)
+	} else {
+		fmt.Printf("Main method not found in class %s\n", cmd.class)
+	}
+	//fmt.Println(cmd.class)
+	//printClassInfo(cf)
 }
-*/
+
+func getMainMethod(cf *classfile.ClassFile) *classfile.MemberInfo {
+	for _, m := range cf.Methods() {
+		if m.Name() == "main" && m.Descriptor() == "([Ljava/lang/String;)V" {
+			return m
+		}
+	}
+	return nil
+}
 
 func loadClass(className string, cp *classpath.Classpath) *classfile.ClassFile {
 	classData, _, err := cp.ReadClass(className)
