@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"jvmgo/ch06/classfile"
 	"jvmgo/ch06/classpath"
+	"jvmgo/ch06/rtda/heap"
 	"strings"
 )
 
@@ -65,13 +66,17 @@ func startJVM(cmd *Cmd) {
 	// 设定jre路径(jre下有启动类路径，扩展类路径)和用户类路径
 	// 类路径可以有多个，用系统路径分隔符隔开
 	cp := classpath.Parse(cmd.XjreOption, cmd.cpOption)
+	// 创建classloader
+	classLoader := heap.NewClassloader(cp)
 	//fmt.Printf("classpath:%s class:%s args:%v\n",
 	//	cp, cmd.class, cmd.args)
 
 	// 类全限名转为路径名，无后缀
 	className := strings.Replace(cmd.class, ".", "/", -1)
-	cf := loadClass(className, cp)
-	mainMethod := getMainMethod(cf)
+	//cf := loadClass(className, cp)
+	// 加载主类
+	mainClass := classLoader.LoadClass(className)
+	mainMethod := mainClass.GetMainMethod()
 	if mainMethod != nil {
 		interpret(mainMethod)
 	} else {

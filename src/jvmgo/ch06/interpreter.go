@@ -2,29 +2,21 @@ package main
 
 import (
 	"fmt"
-	"jvmgo/ch06/classfile"
 	"jvmgo/ch06/instructions"
 	"jvmgo/ch06/instructions/base"
 	"jvmgo/ch06/rtda"
+	"jvmgo/ch06/rtda/heap"
 )
 
-func interpret(methodInfo *classfile.MemberInfo) {
-	// 获取方法的Code属性
-	codeAttr := methodInfo.CodeAttribute()
-	// 获取执行方法所需的局部变量表空间
-	maxLocals := codeAttr.MaxLocals()
-	// 获取执行方法所需的操作数栈空间
-	maxStack := codeAttr.MaxStack()
-	// 获取方法的字节码
-	bytecode := codeAttr.Code()
+func interpret(method *heap.Method) {
 	// 创建一个Thread
 	thread := rtda.NewThread()
 	// 给Thread创建第一个栈帧
-	frame := thread.NewFrame(maxLocals, maxStack)
+	frame := thread.NewFrame(method)
 	thread.PushFrame(frame)
 	defer catchErr(frame)
 	// 循环执行：计算pc、解码指令、执行指令
-	loop(thread, bytecode)
+	loop(thread, method.Code())
 }
 
 func loop(thread *rtda.Thread, bytecode []byte) {

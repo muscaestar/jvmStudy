@@ -1,18 +1,26 @@
 package rtda
 
+import "jvmgo/ch06/rtda/heap"
+
 type Frame struct {
 	lower        *Frame
 	localVars    LocalVars     // 局部变量表
 	operandStack *OperandStack // 操作数栈
 	thread       *Thread       // 线程
+	method       *heap.Method
 	nextPC       int
 }
 
-func newFrame(thread *Thread, maxLocals, maxStack uint) *Frame {
+func (self *Frame) Method() *heap.Method {
+	return self.method
+}
+
+func newFrame(thread *Thread, method *heap.Method) *Frame {
 	return &Frame{
 		thread:       thread,
-		localVars:    newLocalVars(maxLocals),
-		operandStack: newOperandStack(maxStack),
+		method:       method,
+		localVars:    newLocalVars(method.MaxLocals()),
+		operandStack: newOperandStack(method.MaxStack()),
 	}
 }
 
