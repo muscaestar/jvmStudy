@@ -5,6 +5,10 @@ type Object struct {
 	fields Slots
 }
 
+func (self *Object) Class() *Class {
+	return self.class
+}
+
 func (self *Object) Fields() Slots {
 	return self.fields
 }

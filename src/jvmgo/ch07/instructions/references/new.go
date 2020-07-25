@@ -15,6 +15,11 @@ func (self *NEW) Execute(frame *rtda.Frame) {
 	classRef := cp.GetConstant(self.Index).(*heap.ClassRef)
 	// 解析这个类符号引用，拿到类数据
 	class := classRef.ResolvedClass()
+	if !class.InitStarted() {
+		frame.RevertNextPC()
+		base.InitClass(frame.Thread(), class)
+		return
+	}
 	if class.IsInterface() || class.IsAbstract() {
 		panic("java.lang.InstantiationError")
 	}

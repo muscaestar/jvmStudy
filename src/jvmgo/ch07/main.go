@@ -67,7 +67,7 @@ func startJVM(cmd *Cmd) {
 	// 类路径可以有多个，用系统路径分隔符隔开
 	cp := classpath.Parse(cmd.XjreOption, cmd.cpOption)
 	// 创建classloader
-	classLoader := heap.NewClassloader(cp)
+	classLoader := heap.NewClassloader(cp, cmd.verboseClassFlag)
 	//fmt.Printf("classpath:%s class:%s args:%v\n",
 	//	cp, cmd.class, cmd.args)
 
@@ -78,7 +78,7 @@ func startJVM(cmd *Cmd) {
 	mainClass := classLoader.LoadClass(className)
 	mainMethod := mainClass.GetMainMethod()
 	if mainMethod != nil {
-		interpret(mainMethod)
+		interpret(mainMethod, cmd.verboseInstFlag)
 	} else {
 		fmt.Printf("Main method not found in class %s\n", cmd.class)
 	}

@@ -8,9 +8,11 @@ import (
 
 type Cmd struct {
 	// [-options]
-	helpFlag    bool   // -? / -help
-	versionFlag bool   // -version
-	cpOption    string // -cp / -classpath
+	helpFlag         bool   // -? / -help
+	versionFlag      bool   // -version
+	verboseClassFlag bool   // -verbose:class
+	verboseInstFlag  bool   // -verbose:inst
+	cpOption         string // -cp / -classpath
 
 	XjreOption string //
 
@@ -27,6 +29,9 @@ func parseCmd() *Cmd {
 	flag.BoolVar(&cmd.helpFlag, "help", false, "print help message")
 	flag.BoolVar(&cmd.helpFlag, "?", false, "print help message")
 	flag.BoolVar(&cmd.versionFlag, "version", false, "print version and exit")
+	flag.BoolVar(&cmd.verboseClassFlag, "verbose", false, "enable verbose output")
+	flag.BoolVar(&cmd.verboseClassFlag, "verbose:class", false, "enable verbose output")
+	flag.BoolVar(&cmd.verboseInstFlag, "verbose:inst", false, "enable verbose output")
 	flag.StringVar(&cmd.cpOption, "classpath", "", "classpath")
 	flag.StringVar(&cmd.cpOption, "cp", "", "classpath")
 	flag.StringVar(&cmd.XjreOption, "Xjre", "", "path to jre")

@@ -19,6 +19,23 @@ type Class struct {
 	instanceSlotCount uint  // 实例变量数量
 	staticSlotCount   uint  // 类变量数量
 	staticVars        Slots // 类变量
+	initStarted       bool  // 类是否被初始化, <clinit>方法是否已经开始执行
+}
+
+func (self *Class) InitStarted() bool {
+	return self.initStarted
+}
+
+func (self *Class) StartInit() {
+	self.initStarted = true
+}
+
+func (self *Class) SuperClass() *Class {
+	return self.superClass
+}
+
+func (self *Class) Name() string {
+	return self.name
 }
 
 func (self *Class) ConstantPool() *ConstantPool {
@@ -67,10 +84,10 @@ func (self *Class) IsEnum() bool {
 }
 
 func (self *Class) isAccessibleTo(other *Class) bool {
-	return self.IsPublic() || self.getPackageName() == other.getPackageName()
+	return self.IsPublic() || self.GetPackageName() == other.GetPackageName()
 }
 
-func (self *Class) getPackageName() string {
+func (self *Class) GetPackageName() string {
 	if i := strings.LastIndex(self.name, "/"); i >= 0 {
 		return self.name[:i]
 	}
@@ -92,6 +109,10 @@ func (self *Class) getStaticMethod(name, descriptor string) *Method {
 		}
 	}
 	return nil
+}
+
+func (self *Class) GetClinitMethod() *Method {
+	return self.getStaticMethod("<clinit>", "()V")
 }
 
 func newObject(class *Class) *Object {
